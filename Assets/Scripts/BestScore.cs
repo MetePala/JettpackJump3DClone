@@ -8,12 +8,15 @@ public class BestScore : MonoBehaviour
     [SerializeField] GameObject _bestScorePanel;
     [SerializeField] TextMesh _bestScoreText;
     [SerializeField] Transform _playerTransform;
+    [SerializeField] Text _bestText;
     float _bestScore;
     private void Awake()
     {
-        _bestScore= PlayerPrefs.GetFloat("bestscore");
+        _bestScore= PlayerPrefs.GetInt("bestscore");
         _bestScoreText.text= _bestScore.ToString();
         _bestScorePanel.transform.position = new Vector3(0, 2.2f, _bestScore-10);
+
+        _bestText.text = "Best: "+_bestScore.ToString()+"m";
     }
 
     private void FixedUpdate()

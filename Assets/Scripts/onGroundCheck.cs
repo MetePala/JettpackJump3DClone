@@ -16,6 +16,13 @@ public class onGroundCheck : MonoBehaviour
     private void Awake()
     {
     }
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("plane"))
+        {
+            die = true;
+        }
+    }
 
     private void FixedUpdate()
     {
@@ -24,13 +31,17 @@ public class onGroundCheck : MonoBehaviour
         {
             _yellowCircle.enabled = true;
         }
-        if(PlayerController._jumpCount == 3)
+        if(PlayerController._jumpCount == 4)
         {
             _yellowCircle.enabled = false;
             _circle.enabled = false;
         }
         if(die)
             FindObjectOfType<PlayerController>().Die();
+        if(Input.GetMouseButtonDown(0))
+        {
+            die = false;
+        }
     }
 
 
@@ -60,11 +71,5 @@ public class onGroundCheck : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("plane"))
-        {
-            die = true;
-        }
-    }
+   
 }
