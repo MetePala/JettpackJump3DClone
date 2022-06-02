@@ -14,11 +14,14 @@ public class CameraController : MonoBehaviour
     }
     private void Update()
     {
-      if(Input.GetKeyDown(KeyCode.Space))
-        {
+     
+    }
+    public void StartGame()
+    {
+       
             _camera1.SetActive(true);
             _camera2.SetActive(false);
-        }
+      
     }
 
 }

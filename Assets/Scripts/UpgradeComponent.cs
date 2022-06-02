@@ -20,6 +20,7 @@ public class UpgradeComponent : MonoBehaviour
         //PlayerPrefs.DeleteKey("jettpackPrice");
         //PlayerPrefs.DeleteKey("jumpSpeed");
         //PlayerPrefs.DeleteKey("jettpackSpeed");
+        //PlayerPrefs.DeleteKey("bestscore");
 
 
         if (PlayerPrefs.GetInt("jumpPrice") == 0)
@@ -27,7 +28,7 @@ public class UpgradeComponent : MonoBehaviour
             PlayerPrefs.SetInt("jumpPrice", _jumpBoostPrice);
             PlayerPrefs.SetInt("jettpackPrice", _jettpackBoostPrice);
             PlayerPrefs.SetFloat("jumpSpeed", 450);
-            PlayerPrefs.SetFloat("jettpackSpeed", 7f);
+            PlayerPrefs.SetFloat("jettpackSpeed", 11f);
         }
 
         PlayerController._jumpSpeed = PlayerPrefs.GetFloat("jumpSpeed");
@@ -47,12 +48,14 @@ public class UpgradeComponent : MonoBehaviour
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Space))
-        {
-            _startPanel.SetActive(false);
-        }
+      
         Buttonn();
     }
+    public void StartGame()
+    {
+        _startPanel.SetActive(false);
+    }
+
 
     public void JumpBoost()
     {

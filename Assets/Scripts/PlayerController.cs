@@ -9,16 +9,15 @@ public class PlayerController : MonoBehaviour
     [SerializeField] Rigidbody _playerRigid;
     [SerializeField] Animator _playerAnimator;
     [SerializeField] Transform _playerTransform; 
-    [SerializeField] float _runSpeed;  
+    [SerializeField] float _runSpeed=7f;  
     [SerializeField]float timer;
-    [SerializeField] TrailRenderer _trail;
 
-    public static float _jumpSpeed, _jettPackSpeed;
+    public static float _jumpSpeed, _jettPackSpeed, _secondJumpSpeed;
 
-    bool _startActive,_jumpActive=false , _jettPack=false;
+    bool _startActive, _jumpActive = false, _death = false;
     float gold;
     public static int _jumpCount=0;
- 
+    public int jumpcon;
 
     [Header("Score Panel")]
     [SerializeField] GameObject _ScorePanel;
@@ -27,49 +26,45 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
+        _secondJumpSpeed = 100;
         Time.timeScale = 1;
     }
-
+    public void StartGame()
+    {
+        _startActive = true;
+    }
     void Update()
     {
-
-        if (Input.GetKeyDown(KeyCode.Space))
+        jumpcon = _jumpCount;
+        if (Input.GetMouseButtonDown(0) && _jumpCount <= 2 && !_death)
         {
-            _startActive = true;
+
+            if (_startActive == true)
+            {
+                _runSpeed = 7.5f;
+                Jump(_playerRigid, _jumpSpeed, onGroundCheck.IsOnGroud);
+            }
+
+        
+        }
+        if(Input.GetMouseButton(0) && _jumpCount >= 4 && JettPackController.slidervalue>=1)
+        { 
+            _runSpeed = _jettPackSpeed;
+            if(JettPackController.slidervalue <=3)
+                _runSpeed = 7.5f;
+        }
+        if (Input.GetMouseButtonUp(0) && _jumpCount >= 4 && JettPackController.slidervalue >= 1)
+        {
+            _runSpeed = 7.5f;
         }
 
         if (_jumpCount == 3)
         {
-            Jump(_playerRigid, 100, onGroundCheck.IsOnGroud);
-            _jettPack = true;
+            Jump(_playerRigid, _secondJumpSpeed, onGroundCheck.IsOnGroud);
             _playerAnimator.SetBool("__isFly", true);
             _playerTransform.Rotate(-30, 0, 0);
         }
-        if(Input.GetMouseButton(0) && _jettPack == true)
-        {
-            _trail.emitting = true;
-            if (_jumpCount == 4)
-            {
-                _playerRigid.AddForce(Vector3.up * 2);
-                _runSpeed = _jettPackSpeed;
-            }
-        }
-        if (Input.GetMouseButtonUp(0) && _jettPack == true)
-        {
-            _trail.emitting = false;
-            _runSpeed = 5f;
-        }
 
-        if (Input.GetMouseButtonDown(0) && _jettPack == false)
-        {
-            
-            if(_startActive==true)
-            {
-                _runSpeed = 5f;
-                Debug.Log(timer);
-                Jump(_playerRigid, _jumpSpeed, onGroundCheck.IsOnGroud);
-            }  
-        }
     }
     private void FixedUpdate()
     {
@@ -94,16 +89,23 @@ public class PlayerController : MonoBehaviour
        if(onGroundCheck.IsOnGroud)
         timer += Time.deltaTime;
 
-        if (timer >= 0.2f && _jumpCount < 5)
+       if(timer>=0.15f && _jumpCount>=4)
+            _runSpeed = 1f;
+
+       if(_jumpCount>=5 && timer>=1f)
+            StartCoroutine(Death());
+
+        if (timer >= 0.2f && _jumpCount <=2)
         {
             _runSpeed = 3f;
-            if(timer>=2f)
+            if(timer>=1.5f)
             StartCoroutine(Death());
         }
     }
 
     IEnumerator Death()
     {
+        _death = true;
         _playerTransform.eulerAngles = new Vector3(0, 0, 0);
         _playerAnimator.SetBool("__isDie", true);
         _runSpeed = 1.5f;

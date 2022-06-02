@@ -12,7 +12,11 @@ public class onGroundCheck : MonoBehaviour
     public static bool IsOnGroud;
     [SerializeField] Image _circle;
     [SerializeField] Image _yellowCircle;
+    [SerializeField] GameObject line;
+    [SerializeField] Text _perfectOkText;
+    [SerializeField] GameObject _perfectOk;
     bool die = false;
+    public float timer;
     private void Awake()
     {
     }
@@ -26,7 +30,9 @@ public class onGroundCheck : MonoBehaviour
 
     private void FixedUpdate()
     {
+  
         _circle.rectTransform.sizeDelta = new Vector2((transform.position.y*3)+7, (transform.position.y * 3) + 7);
+
         if(PlayerController._jumpCount==1)
         {
             _yellowCircle.enabled = true;
@@ -42,11 +48,68 @@ public class onGroundCheck : MonoBehaviour
         {
             die = false;
         }
-    }
 
+        if(_IsOnGroud)
+        {
+            timer += Time.deltaTime;
+        }
+        else
+        {
+            timer = -0.1f;
+        }
+
+    }
+    IEnumerator Waiting()
+    {
+        _perfectOk.SetActive(true);
+        yield return new WaitForSeconds(1f);
+        _perfectOk.SetActive(false);
+    }
 
     void Update()
     {
+        if (Input.GetMouseButtonDown(0) && PlayerController._jumpCount == 0)
+        {
+            float fark = Mathf.Abs(gameObject.transform.position.z - line.transform.position.z);
+            if (fark <= 0.5f)
+            {
+                _perfectOkText.color = Color.magenta;
+                _perfectOkText.text = "Perfect!";
+                StartCoroutine(Waiting());
+                PlayerController._secondJumpSpeed += 20;
+
+            }
+            else if (fark <= 1.8f)
+            {
+                _perfectOkText.color = Color.grey;
+                _perfectOkText.text = "OK!";
+                StartCoroutine(Waiting());
+                PlayerController._secondJumpSpeed += 10;
+            }
+        }
+
+        if (Input.GetMouseButtonDown(0) && (PlayerController._jumpCount ==1 || PlayerController._jumpCount == 2) && _IsOnGroud)
+        {
+            if(timer<=0f)
+            {
+                _perfectOkText.color = Color.magenta;
+                _perfectOkText.text = "Perfect!";
+                StartCoroutine(Waiting());
+                PlayerController._secondJumpSpeed += 20;
+            }
+            else if (timer <= 0.2f)
+            {
+                _perfectOkText.color = Color.grey;
+                _perfectOkText.text = "OK!";
+                StartCoroutine(Waiting());
+                PlayerController._secondJumpSpeed += 10;
+            }
+
+        }
+
+
+
+
         foreach (Transform footTransform in _translates)
         {
             CheckFootOnGroud(footTransform);
